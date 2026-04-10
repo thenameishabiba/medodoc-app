@@ -11,6 +11,11 @@ from deep_translator import GoogleTranslator
 from faster_whisper import WhisperModel
 from datetime import datetime
 
+import gc
+import torch
+torch.cuda.empty_cache() if torch.cuda.is_available() else None
+gc.collect()
+
 # ========================= CONFIG =========================
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")   # set in env or .streamlit/secrets.toml
 SUPABASE_URL   = os.getenv("SUPABASE_URL", "")
@@ -49,7 +54,7 @@ for key in ["transcript", "translated", "duration_sec", "summary_dict", "audio_b
 # ========================= LOAD WHISPER =========================
 @st.cache_resource(show_spinner=False)
 def load_whisper():
-    return WhisperModel("large-v3", device="CPU", compute_type="int8")
+    return WhisperModel("large-v3-turbo", device="CPU", compute_type="int8")
 
 whisper_model = load_whisper()
 
