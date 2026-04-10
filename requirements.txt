@@ -1,0 +1,10 @@
+streamlit
+numpy
+soundfile
+requests
+torch --index-url https://download.pytorch.org/whl/cpu
+torchaudio --index-url https://download.pytorch.org/whl/cpu
+deep-translator
+faster-whisper
+supabase
+python-dateutil
