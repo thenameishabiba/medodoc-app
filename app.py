@@ -234,17 +234,47 @@ with tab_upload:
         st.success("Audio uploaded successfully!")
 
 # ====================== RECORD TAB (SIMPLE & WORKING) ======================
+# with tab_record:
+#     st.subheader("🎙️ Record Doctor-Patient Conversation")
+#     st.info("Click the microphone button below → speak → click stop. Audio will be saved automatically.")
+
+#     recorded_audio = st.audio_input("Record Audio")
+
+#     if recorded_audio is not None:
+#         st.session_state.audio_bytes = recorded_audio.getvalue()
+#         st.success("✅ Recording saved successfully!")
+#         st.audio(recorded_audio, format="audio/wav")
+
+# ====================== RECORD TAB ======================
 with tab_record:
     st.subheader("🎙️ Record Doctor-Patient Conversation")
-    st.info("Click the microphone button below → speak → click stop. Audio will be saved automatically.")
+    st.info("Click the microphone → speak → click stop. Audio will be **automatically saved** to Supabase.")
 
     recorded_audio = st.audio_input("Record Audio")
 
     if recorded_audio is not None:
+        # Save to session state (for later use in transcription)
         st.session_state.audio_bytes = recorded_audio.getvalue()
+        
         st.success("✅ Recording saved successfully!")
         st.audio(recorded_audio, format="audio/wav")
 
+        # === NEW: Automatically save to Supabase right after recording ===
+        with st.spinner("Saving recorded audio to Supabase..."):
+            # Create a simple initial record (you can expand later)
+            record_id, error = save_to_supabase(
+                audio_bytes=st.session_state.audio_bytes,
+                transcript="",           # empty for now
+                translated="",           # empty for now
+                summary_dict={},         # empty for now
+                duration=0.0             # we'll update duration later if needed
+            )
+            
+            if error:
+                st.error(f"❌ Failed to save to Supabase: {error}")
+            else:
+                st.success(f"✅ Audio successfully saved to Supabase! Record ID: **{record_id}**")
+                
 # ====================== TRANSCRIPTION ======================
 if st.button("▶ Start Transcription", type="primary", use_container_width=True):
     if not st.session_state.get("audio_bytes"):
